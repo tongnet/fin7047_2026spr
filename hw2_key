@@ -1,0 +1,336 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNrTL7a4KgQ855mLLaXht/Q",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/tongnet/fin7047_2026spr/blob/main/hw2_key\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "nAj6HNWktffu",
+        "outputId": "3b979bb8-19a4-4043-f56e-d54269959617"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipython-input-4258338625.py:5: FutureWarning: YF.download() has changed argument auto_adjust default to True\n",
+            "  data = yf.download(\n",
+            "[*********************100%***********************]  2 of 2 completed"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Close prices on 2020-01-02:\n",
+            "Ticker\n",
+            "BTC-USD    6985.470215\n",
+            "XRP-USD       0.188043\n",
+            "Name: 2020-01-02 00:00:00, dtype: float64\n",
+            "\n",
+            "Close prices on 2025-12-31:\n",
+            "Ticker\n",
+            "BTC-USD    87508.828125\n",
+            "XRP-USD        1.839973\n",
+            "Name: 2025-12-31 00:00:00, dtype: float64\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "\n"
+          ]
+        }
+      ],
+      "source": [
+        "#4 You spent USD1000 each on Jan 2, 2020 to buy Bitcoin (BTC) and Ripple (XRP) and hold both securities indefinitely. Using information from Yahoo Finance, answer the following questions:\n",
+        "#A) Get their prices on December 31, 2025.from Yahoo Finance using codes attached in the box on the next page.\n",
+        "#B) How much do you have December 31, 2025?\n",
+        "#C) What is the return of your investment?\n",
+        "#D) Which investment has better performance, BTC or XRP?\n",
+        "\n",
+        "import yfinance as yf\n",
+        "\n",
+        "tickers = [\"BTC-USD\", \"XRP-USD\"]\n",
+        "\n",
+        "data = yf.download(\n",
+        "    tickers,\n",
+        "    start=\"2020-01-02\",\n",
+        "    end=\"2026-01-01\"   # end is exclusive\n",
+        ")\n",
+        "\n",
+        "prices_20200102 = data[\"Close\"].loc[\"2020-01-02\"]\n",
+        "prices_20251231 = data[\"Close\"].loc[\"2025-12-31\"]\n",
+        "\n",
+        "print(\"Close prices on 2020-01-02:\")\n",
+        "print(prices_20200102)\n",
+        "\n",
+        "print(\"\\nClose prices on 2025-12-31:\")\n",
+        "print(prices_20251231)\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# 5. Using Yahoo Finance data, download daily closing prices for Ethereum (ETH-USD) and the S&P 500 Index (^GSPC) over the past 12 months.\n",
+        "# A.\tCompute daily returns for ETH and for the S&P 500 using percentage changes in closing prices.\n",
+        "\n",
+        "import yfinance as yf\n",
+        "import pandas as pd\n",
+        "\n",
+        "# Define tickers\n",
+        "tickers = [\"ETH-USD\", \"^GSPC\"]\n",
+        "\n",
+        "# Specify date range\n",
+        "start_date = \"2025-01-23\"\n",
+        "end_date   = \"2026-01-23\"\n",
+        "\n",
+        "# Download daily closing prices\n",
+        "data = yf.download(\n",
+        "    tickers,\n",
+        "    start=start_date,\n",
+        "    end=end_date,\n",
+        "    interval=\"1d\"\n",
+        ")[\"Close\"]\n",
+        "\n",
+        "# Rename columns for clarity\n",
+        "data.columns = [\"ETH\", \"SP500\"]\n",
+        "\n",
+        "# Compute daily percentage returns (keep NaNs)\n",
+        "returns = data.pct_change()\n",
+        "\n",
+        "# Estimate standard deviation of daily returns\n",
+        "std_dev = returns.std()\n",
+        "\n",
+        "# Display results\n",
+        "print(\"Sample period:\", start_date, \"to\", end_date)\n",
+        "print(returns.head())\n",
+        "print(returns.tail())\n",
+        "print(std_dev)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "5QPczI9a_cFk",
+        "outputId": "6525c4da-fce1-41e3-8710-a87c10bda3d9"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipython-input-532609525.py:15: FutureWarning: YF.download() has changed argument auto_adjust default to True\n",
+            "  data = yf.download(\n",
+            "[*********************100%***********************]  2 of 2 completed"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Sample period: 2025-01-23 to 2026-01-23\n",
+            "                 ETH     SP500\n",
+            "Date                          \n",
+            "2025-01-23       NaN       NaN\n",
+            "2025-01-24 -0.007545 -0.002855\n",
+            "2025-01-25  0.002331  0.000000\n",
+            "2025-01-26 -0.024458  0.000000\n",
+            "2025-01-27 -0.017680 -0.014581\n",
+            "                 ETH     SP500\n",
+            "Date                          \n",
+            "2026-01-18 -0.008373  0.000000\n",
+            "2026-01-19 -0.028812  0.000000\n",
+            "2026-01-20 -0.078772 -0.020627\n",
+            "2026-01-21  0.014748  0.011588\n",
+            "2026-01-22 -0.009825  0.005488\n",
+            "ETH      0.039063\n",
+            "SP500    0.009739\n",
+            "dtype: float64\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "\n",
+            "/tmp/ipython-input-532609525.py:26: FutureWarning: The default fill_method='pad' in DataFrame.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.\n",
+            "  returns = data.pct_change()\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "378ffe11",
+        "outputId": "abd1df88-0ed2-435b-f851-94bc539760c1"
+      },
+      "source": [
+        "# 6. Generate a dataset containing daily returns for Bitcoin BTC-USD) and the S&P 500 (^GSPC) from January 1, 2020 to December 31, 2025. Then analyze their relationship using a regression model, splitting the sample into 70% training and 30% testing sets.\n",
+        "# A. prepare data\n",
+        "import yfinance as yf\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "# --------------------------------\n",
+        "# specify dates\n",
+        "# --------------------------------\n",
+        "start_date = \"2020-01-01\"\n",
+        "end_date   = \"2025-12-31\"\n",
+        "\n",
+        "# --------------------------------\n",
+        "# Download price data\n",
+        "# --------------------------------\n",
+        "tickers = [\"BTC-USD\", \"^GSPC\"]\n",
+        "prices = yf.download(tickers, start=start_date, end=end_date)[\"Close\"]\n",
+        "\n",
+        "# --------------------------------\n",
+        "# Compute daily returns\n",
+        "# --------------------------------\n",
+        "returns = (prices / prices.shift(1)).dropna()\n",
+        "returns.columns = [\"BTC_Return\", \"SP500_Return\"]\n",
+        "\n",
+        "returns.head()\n",
+        "\n",
+        "# B: split the data\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "\n",
+        "X = returns[[\"SP500_Return\"]]\n",
+        "y = returns[\"BTC_Return\"]\n",
+        "\n",
+        "X_train, X_test, y_train, y_test = train_test_split(\n",
+        "    X, y, test_size=0.30, shuffle=False\n",
+        ")\n",
+        "\n",
+        "# C. Perform analysis using the training data\n",
+        "import statsmodels.api as sm\n",
+        "\n",
+        "# Add intercept\n",
+        "X_train_const = sm.add_constant(X_train)\n",
+        "X_test_const  = sm.add_constant(X_test)\n",
+        "\n",
+        "# Fit model\n",
+        "model = sm.OLS(y_train, X_train_const).fit()\n",
+        "print(\"summary statistics from training data\")\n",
+        "print(model.summary())\n",
+        "\n",
+        "# D. Use test data (prediction + evaluation)\n",
+        "from sklearn.metrics import mean_squared_error, r2_score\n",
+        "import numpy as np\n",
+        "\n",
+        "y_pred = model.predict(X_test_const)\n",
+        "\n",
+        "test_r2 = r2_score(y_test, y_pred)\n",
+        "test_rmse = np.sqrt(mean_squared_error(y_test, y_pred))\n",
+        "\n",
+        "print(\"summary statistics from test data\")\n",
+        "print(\"\\n--- Test performance ---\")\n",
+        "print(f\"Test R^2  : {test_r2:.4f}\")\n",
+        "print(f\"Test RMSE : {test_rmse:.6f}\")\n",
+        "\n",
+        "\n"
+      ],
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipython-input-2756846922.py:17: FutureWarning: YF.download() has changed argument auto_adjust default to True\n",
+            "  prices = yf.download(tickers, start=start_date, end=end_date)[\"Close\"]\n",
+            "[*********************100%***********************]  2 of 2 completed"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "summary statistics from training data\n",
+            "                            OLS Regression Results                            \n",
+            "==============================================================================\n",
+            "Dep. Variable:             BTC_Return   R-squared:                       0.166\n",
+            "Model:                            OLS   Adj. R-squared:                  0.165\n",
+            "Method:                 Least Squares   F-statistic:                     163.6\n",
+            "Date:                Fri, 23 Jan 2026   Prob (F-statistic):           2.74e-34\n",
+            "Time:                        22:15:30   Log-Likelihood:                 1614.5\n",
+            "No. Observations:                 825   AIC:                            -3225.\n",
+            "Df Residuals:                     823   BIC:                            -3216.\n",
+            "Df Model:                           1                                         \n",
+            "Covariance Type:            nonrobust                                         \n",
+            "================================================================================\n",
+            "                   coef    std err          t      P>|t|      [0.025      0.975]\n",
+            "--------------------------------------------------------------------------------\n",
+            "const           -0.0911      0.086     -1.065      0.287      -0.259       0.077\n",
+            "SP500_Return     1.0930      0.085     12.789      0.000       0.925       1.261\n",
+            "==============================================================================\n",
+            "Omnibus:                      137.325   Durbin-Watson:                   2.136\n",
+            "Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1403.189\n",
+            "Skew:                          -0.394   Prob(JB):                    2.00e-305\n",
+            "Kurtosis:                       9.340   Cond. No.                         144.\n",
+            "==============================================================================\n",
+            "\n",
+            "Notes:\n",
+            "[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.\n",
+            "summary statistics from test data\n",
+            "\n",
+            "--- Test performance ---\n",
+            "Test R^2  : 0.1655\n",
+            "Test RMSE : 0.024625\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "FRe5db666jOJ"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
