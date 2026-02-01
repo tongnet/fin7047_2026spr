@@ -1,0 +1,126 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNvMYJkZZEflAIiOaOMyyY5",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/tongnet/fin7047_2026spr/blob/main/hw3_pca_simulateddata\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "rANd36KQim-W",
+        "outputId": "d3a89343-9a02-4d19-da01-90a742846f8f"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "First 5 rows of simulated data:\n",
+            "    Firm Size  Leverage  Profitability  Market-to-Book  Cash Holding %  \\\n",
+            "0  549.671415  0.792315      10.715575        2.336804        0.681114   \n",
+            "1  486.173570  1.289677      11.121569        2.551855        0.880125   \n",
+            "2  564.768854  1.328643      12.166102        3.597835        1.001049   \n",
+            "3  652.302986  1.098861      12.107604        3.488296        1.009396   \n",
+            "4  476.584663  1.419357       7.244661        2.983279        0.909987   \n",
+            "\n",
+            "   Fixed Assets  \n",
+            "0    311.141306  \n",
+            "1    429.129997  \n",
+            "2     32.171891  \n",
+            "3    267.556308  \n",
+            "4    121.922892  \n",
+            "Mounted at /content/drive\n",
+            "Created folder: /content/drive/MyDrive/data\n",
+            "Dataset saved to: /content/drive/MyDrive/data/simulated_firm_data.csv\n"
+          ]
+        }
+      ],
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import os\n",
+        "\n",
+        "# =========================\n",
+        "# Step 1: Simulate data\n",
+        "# =========================\n",
+        "\n",
+        "np.random.seed(42)  # For reproducibility\n",
+        "\n",
+        "data = pd.DataFrame({\n",
+        "    \"Firm Size\": np.random.normal(500, 100, 100),           # Revenue\n",
+        "    \"Leverage\": np.random.normal(1.5, 0.5, 100),            # Debt-to-equity ratio\n",
+        "    \"Profitability\": np.random.normal(10, 2, 100),          # ROA\n",
+        "    \"Market-to-Book\": np.random.normal(3, 0.8, 100),        # Valuation ratio\n",
+        "    \"Cash Holding %\": np.random.normal(1, 0.2, 100),        # Cash holding percentage\n",
+        "    \"Fixed Assets\": np.random.normal(200, 120, 100)         # Fixed assets\n",
+        "})\n",
+        "\n",
+        "print(\"First 5 rows of simulated data:\")\n",
+        "print(data.head())\n",
+        "\n",
+        "# =========================\n",
+        "# Step 2: Mount Google Drive (Google Colab)\n",
+        "# =========================\n",
+        "\n",
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')\n",
+        "\n",
+        "# =========================\n",
+        "# Step 3: Create folder if it doesn't exist\n",
+        "# =========================\n",
+        "\n",
+        "folder_path = \"/content/drive/MyDrive/data\"\n",
+        "\n",
+        "if not os.path.exists(folder_path):\n",
+        "    os.makedirs(folder_path)\n",
+        "    print(\"Created folder:\", folder_path)\n",
+        "else:\n",
+        "    print(\"Folder already exists:\", folder_path)\n",
+        "\n",
+        "# =========================\n",
+        "# Step 4: Save dataset as CSV\n",
+        "# =========================\n",
+        "\n",
+        "file_path = folder_path + \"/simulated_firm_data.csv\"\n",
+        "data.to_csv(file_path, index=False)\n",
+        "\n",
+        "print(\"Dataset saved to:\", file_path)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "wPWxAfUtizl-"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
