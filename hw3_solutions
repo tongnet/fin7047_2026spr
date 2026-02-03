@@ -1,0 +1,251 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPOy0ehvU+zUCv0VvzpV2k1",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/tongnet/fin7047_2026spr/blob/main/hw3_solutions\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "uGlv1l7CX3FQ",
+        "outputId": "62773f60-828f-458d-cff4-572188ba1f3b"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Principal Components (first 5 rows):\n",
+            "        PC1       PC2       PC3\n",
+            "0  1.885322  1.895347 -0.158241\n",
+            "1  0.467251  1.799759 -0.197252\n",
+            "2  0.873079 -1.199182  1.252787\n",
+            "3  1.208380  0.334479  1.468426\n",
+            "4 -0.196309  0.271125 -0.771677\n",
+            "         PC1       PC2       PC3\n",
+            "95 -1.157671 -0.248921 -1.065813\n",
+            "96  2.178971  0.381476 -0.827152\n",
+            "97 -0.081869 -0.776206  1.100086\n",
+            "98  0.875799 -0.199454  0.021838\n",
+            "99  0.486240  1.367389  1.493126\n",
+            "\n",
+            "Explained variance ratios:\n",
+            "[0.25068495 0.20897311 0.17250812]\n",
+            "\n",
+            "Cumulative explained variance:\n",
+            "0.6321661847254972\n"
+          ]
+        }
+      ],
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.decomposition import PCA\n",
+        "\n",
+        "# Load CSV file\n",
+        "file_path = \"/content/simulated_firm_data.csv\"\n",
+        "df = pd.read_csv(file_path)\n",
+        "\n",
+        "# Keep numeric columns only\n",
+        "X = df.select_dtypes(include=[\"int64\", \"float64\"]).dropna()\n",
+        "\n",
+        "# Standardize the data\n",
+        "scaler = StandardScaler()\n",
+        "X_scaled = scaler.fit_transform(X)\n",
+        "\n",
+        "# Run PCA\n",
+        "pca = PCA(n_components=3)\n",
+        "pcs = pca.fit_transform(X_scaled)\n",
+        "\n",
+        "# Create DataFrame for PCs\n",
+        "pc_df = pd.DataFrame(pcs, columns=[\"PC1\", \"PC2\", \"PC3\"])\n",
+        "\n",
+        "# Print first few rows\n",
+        "print(\"Principal Components (first 5 rows):\")\n",
+        "print(pc_df.head())\n",
+        "print(pc_df.tail())\n",
+        "\n",
+        "# Explained variance\n",
+        "print(\"\\nExplained variance ratios:\")\n",
+        "print(pca.explained_variance_ratio_)\n",
+        "\n",
+        "print(\"\\nCumulative explained variance:\")\n",
+        "print(pca.explained_variance_ratio_.sum())"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# LDA topic modeling (5 topics) with basic preprocessing\n",
+        "# Works with: pip install scikit-learn\n",
+        "\n",
+        "import re\n",
+        "from sklearn.feature_extraction.text import CountVectorizer, ENGLISH_STOP_WORDS\n",
+        "from sklearn.decomposition import LatentDirichletAllocation\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 1) Input documents\n",
+        "# -----------------------------\n",
+        "docs = [\n",
+        "    \"I enjoy eating burgers and fries on the weekend.\",\n",
+        "    \"Rising interest rates are slowing down economic growth.\",\n",
+        "    \"Pasta and sandwiches are popular lunch choices for many people.\",\n",
+        "    \"The central bank introduced new measures to control inflation.\",\n",
+        "    \"Advances in artificial intelligence are reshaping many industries.\",\n",
+        "    \"Financial markets reacted negatively to the latest economic news.\",\n",
+        "    \"Machine learning is improving how companies analyze large datasets.\",\n",
+        "    \"The global economy is struggling with higher energy prices.\",\n",
+        "    \"I like trying different types of pizza with various toppings.\",\n",
+        "    \"Government spending programs aim to support unemployed workers.\",\n",
+        "    \"Technology firms are investing heavily in AI research.\",\n",
+        "    \"Stock prices fell sharply after the earnings announcement.\",\n",
+        "    \"Automation is changing the future of work across sectors.\",\n",
+        "    \"Economic uncertainty has reduced consumer confidence.\",\n",
+        "    \"New regulations were introduced to stabilize the financial system.\"\n",
+        "]\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 2) Preprocessing function\n",
+        "#    - lowercase\n",
+        "#    - remove non-letters\n",
+        "#    - remove stopwords\n",
+        "# -----------------------------\n",
+        "stopwords = set(ENGLISH_STOP_WORDS)\n",
+        "\n",
+        "def preprocess(text: str) -> str:\n",
+        "    text = text.lower()\n",
+        "    text = re.sub(r\"[^a-z\\s]\", \" \", text)       # keep letters/spaces only\n",
+        "    tokens = [t for t in text.split() if t not in stopwords and len(t) > 2]\n",
+        "    return \" \".join(tokens)\n",
+        "\n",
+        "docs_clean = [preprocess(d) for d in docs]\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 3) Vectorize (bag-of-words)\n",
+        "#    - unigrams + bigrams help small corpora\n",
+        "#    - min_df=1 because dataset is tiny\n",
+        "# -----------------------------\n",
+        "vectorizer = CountVectorizer(\n",
+        "    ngram_range=(1, 2),\n",
+        "    min_df=1\n",
+        ")\n",
+        "\n",
+        "X = vectorizer.fit_transform(docs_clean)\n",
+        "vocab = vectorizer.get_feature_names_out()\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 4) Fit LDA with 5 topics\n",
+        "# -----------------------------\n",
+        "n_topics = 5\n",
+        "lda = LatentDirichletAllocation(\n",
+        "    n_components=n_topics,\n",
+        "    random_state=42,\n",
+        "    learning_method=\"batch\"\n",
+        ")\n",
+        "lda.fit(X)\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 5) Display topics\n",
+        "# -----------------------------\n",
+        "def print_topics(model, feature_names, top_n=8):\n",
+        "    for k, topic_weights in enumerate(model.components_):\n",
+        "        top_idx = topic_weights.argsort()[::-1][:top_n]\n",
+        "        top_terms = [feature_names[i] for i in top_idx]\n",
+        "        print(f\"\\nTopic {k+1}: {', '.join(top_terms)}\")\n",
+        "\n",
+        "print(\"=== Top terms per topic ===\")\n",
+        "print_topics(lda, vocab, top_n=8)\n",
+        "\n",
+        "# -----------------------------\n",
+        "# 6) Topic mixture per document\n",
+        "# -----------------------------\n",
+        "doc_topic = lda.transform(X)  # shape: (n_docs, n_topics)\n",
+        "\n",
+        "print(\"\\n=== Dominant topic per document ===\")\n",
+        "for i, probs in enumerate(doc_topic, start=1):\n",
+        "    dom_topic = probs.argmax() + 1\n",
+        "    confidence = probs.max()\n",
+        "    print(f\"Doc {i:02d}: Topic {dom_topic} (p={confidence:.3f}) | {docs[i-1]}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "W-uCODZ8aXHO",
+        "outputId": "45d51c07-ff4d-4386-f17c-d6b34eb4663d"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "=== Top terms per topic ===\n",
+            "\n",
+            "Topic 1: economic, unemployed, workers, spending programs, spending, support, support unemployed, programs\n",
+            "\n",
+            "Topic 2: financial, companies analyze, datasets, improving companies, learning improving, machine learning, improving, large datasets\n",
+            "\n",
+            "Topic 3: prices, stock, stock prices, fell, earnings announcement, fell sharply, earnings, sharply earnings\n",
+            "\n",
+            "Topic 4: economic news, financial markets, latest economic, negatively latest, negatively, markets reacted, markets, latest\n",
+            "\n",
+            "Topic 5: introduced, new, types pizza, toppings, trying, trying different, types, pizza various\n",
+            "\n",
+            "=== Dominant topic per document ===\n",
+            "Doc 01: Topic 4 (p=0.920) | I enjoy eating burgers and fries on the weekend.\n",
+            "Doc 02: Topic 2 (p=0.920) | Rising interest rates are slowing down economic growth.\n",
+            "Doc 03: Topic 5 (p=0.933) | Pasta and sandwiches are popular lunch choices for many people.\n",
+            "Doc 04: Topic 5 (p=0.943) | The central bank introduced new measures to control inflation.\n",
+            "Doc 05: Topic 4 (p=0.920) | Advances in artificial intelligence are reshaping many industries.\n",
+            "Doc 06: Topic 4 (p=0.943) | Financial markets reacted negatively to the latest economic news.\n",
+            "Doc 07: Topic 2 (p=0.943) | Machine learning is improving how companies analyze large datasets.\n",
+            "Doc 08: Topic 4 (p=0.933) | The global economy is struggling with higher energy prices.\n",
+            "Doc 09: Topic 5 (p=0.943) | I like trying different types of pizza with various toppings.\n",
+            "Doc 10: Topic 1 (p=0.943) | Government spending programs aim to support unemployed workers.\n",
+            "Doc 11: Topic 4 (p=0.920) | Technology firms are investing heavily in AI research.\n",
+            "Doc 12: Topic 3 (p=0.933) | Stock prices fell sharply after the earnings announcement.\n",
+            "Doc 13: Topic 3 (p=0.920) | Automation is changing the future of work across sectors.\n",
+            "Doc 14: Topic 1 (p=0.920) | Economic uncertainty has reduced consumer confidence.\n",
+            "Doc 15: Topic 2 (p=0.920) | New regulations were introduced to stabilize the financial system.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "0ApSphznaY34"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
